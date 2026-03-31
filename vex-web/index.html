@@ -167,11 +167,11 @@ function vsub(a, b) {
 function parse(expr) {
   expr = expr.trim()
     .replace(/×/g, '*').replace(/÷/g, '/')
-    .replace(/-∞_?(\d+\.?\d*)/g, 'INF(-$1)')
-    .replace(/∞_?(\d+\.?\d*)/g, 'INF($1)')
-    .replace(/-inf_(\d+\.?\d*)/g, 'INF(-$1)')
-    .replace(/inf_(\d+\.?\d*)/g, 'INF($1)')
-    .replace(/0_(\d+\.?\d*)/g, 'ZERO($1)');
+    .replace(/-∞_?(-?\d*\.?\d+)/g, 'INF(-$1)')
+    .replace(/∞_?(-?\d*\.?\d+)/g, 'INF($1)')
+    .replace(/-inf_(-?\d*\.?\d+)/g, 'INF(-$1)')
+    .replace(/inf_(-?\d*\.?\d+)/g, 'INF($1)')
+    .replace(/0_(-?\d*\.?\d+)/g, 'ZERO($1)');
 
   // Tokenize
   const tokens = [];
@@ -209,6 +209,7 @@ function parse(expr) {
         num += expr[i]; i++;
       }
       if (num) tokens.push(vReal(parseFloat(num)));
+      else i++; // skip unrecognized character to prevent infinite loop
     }
   }
 

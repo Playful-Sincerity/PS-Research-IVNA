@@ -4,7 +4,7 @@
 A consistent algebraic framework that attaches indices to zeros and infinities, making division by zero and indeterminate forms algebraically operable. Proven consistent via NSA embedding (37/37 SymPy + 11/11 Z3 checks). Lean4 formalization complete (11 axioms, 12 theorems, consistency proof).
 
 ## Status
-**Phase 2: Paper drafting.** Validation complete. Lean4 proofs compile. e exploration done. LaTeX scaffold ready. Next: fill in paper sections, then ArXiv submission.
+**Phase 2: Paper drafting.** Validation complete (272 total checks: 145 comprehensive + 127 MCP verification, 0 failures). Lean4 proofs compile. e exploration done. LaTeX scaffold ready. Impact/adoption/community document written. Next: fill in paper sections, then ArXiv submission.
 
 ## Key Results
 - **28/28 Python tests pass** — core algebra + resolved contradictions + transcendental derivatives
@@ -46,7 +46,12 @@ IVNA/
 │   │   ├── e-exploration.md         # Deep e consequences (5 HIGH-rated)
 │   │   ├── applications-physics.md  # Physics apps + L'Hôpital elimination
 │   │   ├── value-assessment.md      # Final verdict + revised paper outline
-│   │   └── writing-style-guide.md   # Wisdom's voice for paper drafting
+│   │   ├── writing-style-guide.md   # Wisdom's voice for paper drafting
+│   │   ├── impact-and-adoption.md   # Real-world impact trajectory + community vision
+│   │   ├── verification-mcp-sympy.txt    # 69/69 SymPy symbolic checks
+│   │   ├── verification-mcp-z3.txt       # 31/31 Z3 satisfiability checks
+│   │   ├── verification-mcp-wolfram.txt  # 27/27 step-by-step derivative/FTC checks
+│   │   └── verification-mcp-literature.txt # 20-source literature comparison
 │   └── plans/
 │       ├── plan.md                        # Phase 1 master plan (complete)
 │       ├── plan-phase2.md                 # Phase 2 plan (paper + publication)
