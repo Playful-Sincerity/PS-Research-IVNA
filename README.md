@@ -126,7 +126,7 @@ Open `vex-web/index.html` in a browser for a live VEA (Virtual Expression Arithm
 
 ## Author
 
-**Wisdom Patience Happy**
+**Wisdom Happy**
 [Playful Sincerity Research](https://playfulsincerity.org)
 Wisdom@PlayfulSincerity.org
 

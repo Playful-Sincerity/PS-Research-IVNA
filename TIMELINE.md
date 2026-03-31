@@ -53,7 +53,7 @@
 
 ### Phase 4: Paper Drafting (previous session, not detailed here)
 - All 10 sections + appendix written
-- Author: Wisdom Patience Happy, Playful Sincerity Research
+- Author: Wisdom Happy, Playful Sincerity Research
 - Paper compiles via tectonic, 1229 lines
 
 ### Phase 5: GitHub & Public Release
@@ -61,7 +61,7 @@
 35. **Created Playful-Sincerity/PS-Research-IVNA** — public repo under org
 36. Naming convention established: `PS-Research-IVNA` mirrors local `PS Research/IVNA/` path. Future repos follow same pattern.
 37. **README written**: hook (5/0₁ = ∞₅), "verify in 30 seconds" commands, axiom table, verification summary
-38. MIT license added (Wisdom Patience Happy / Playful Sincerity Research, 2026)
+38. MIT license added (Wisdom Happy / Playful Sincerity Research, 2026)
 39. Paper updated with GitHub URL (two placeholder instances replaced)
 40. `.gitignore` updated: only `distribution/` excluded — everything else public
 41. Old personal repo (WisdomPatienceHappy/IVNA) still exists as private
