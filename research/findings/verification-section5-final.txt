@@ -1,0 +1,27 @@
+Section 5 verification: 26 passed, saved for record
+  PASS  A-EXP (1,1)
+  PASS  A-EXP (1,2)
+  PASS  A-EXP (2,1)
+  PASS  A-EXP (0.5,2)
+  PASS  A-EXP (2,3)
+  PASS  A-EXP (1,-1)
+  PASS  A-EXP (3,0.5)
+  PASS  A-EXP (0.1,10)
+  PASS  int x^0
+  PASS  int x^1
+  PASS  int x^2
+  PASS  int x^3
+  PASS  int x^4
+  PASS  int x^5
+  PASS  int x^6
+  PASS  d/dx x^2 at 3
+  PASS  d/dx x^3 at 2
+  PASS  d/dx x^4 at 2
+  PASS  d/dx x^5 at 2
+  PASS  0_1/0_1=1
+  PASS  0_3/0_7=3/7
+  PASS  0_6/0_3=2
+  PASS  inf_2/inf_3=2/3
+  PASS  inf_5/inf_2=5/2
+  PASS  D-INDEX-ZERO add
+  PASS  D-INDEX-ZERO sub
