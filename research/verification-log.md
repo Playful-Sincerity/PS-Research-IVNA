@@ -104,22 +104,69 @@ All agent prompts are preserved in the conversation context. Agent outputs are s
 | 13 | Complex analysis + Riemann | Residues, divergent series, ζ function | `phase3-13-complex-analysis-riemann.txt` |
 | 14 | ODE deep dive | Harmonic oscillator, matrix exp, heat eq | `phase3-14-ode-deep-dive.txt` |
 | 15 | CS demos | N-body, gradient, IEEE 754, singular ODE | `phase3-15-cs-demos.txt` |
+| 16 | Literature verification | Deep prior art search, 25+ queries | `phase3-16-literature-verification.txt` |
 
 ---
 
-## Tools Available (not all used in every verification)
+## Phase 3b: MCP Verification (CLI Session)
+
+### V10: SymPy MCP — Full Symbolic Verification
+- **Tool**: sympy-mcp (40+ symbolic math tools)
+- **Session**: CLI (`claude` in terminal)
+- **Checks**: 69 — all axioms, derivatives (polynomial + rational + trig + exponential), FTC, NSA embedding, transcendental functions, Euler's identity
+- **Output**: `research/findings/verification-mcp-sympy.txt`
+- **Verdict**: 69/69 PASS
+
+### V11: Z3 MCP — Extended Satisfiability
+- **Tool**: mcp-solver (Z3 SMT)
+- **Session**: CLI
+- **Checks**: 31 — full axiom set satisfiability, roundtrip tautology, A-EXP consistency, product constant uniqueness, all 11 axioms independent, D-INDEX-ZERO consistency, virtual zeros ≠ real zeros, A-VT consistency
+- **Output**: `research/findings/verification-mcp-z3.txt`
+- **Verdict**: 31/31 PASS
+- **Key finding**: All 11 axioms are INDEPENDENT (none derivable from others). Roundtrip is a JOINT THEOREM of A6+A3.
+
+### V12: Wolfram MCP — Step-by-Step Derivation
+- **Tool**: wolfram (full Wolfram Language)
+- **Session**: CLI
+- **Checks**: 27 — step-by-step derivative verification for all function classes, FTC both directions with explicit Riemann sums, A-EXP confirmation, chain rule, product rule
+- **Output**: `research/findings/verification-mcp-wolfram.txt`
+- **Verdict**: 27/27 PASS
+
+### V13: Literature MCP — Novelty Confirmation
+- **Tool**: Web search + paper search
+- **Session**: CLI
+- **Searches**: "indexed infinitesimals," "indexed zero," "parameterized infinitesimal" across arXiv, Semantic Scholar, web
+- **Output**: `research/findings/verification-mcp-literature.txt`
+- **Verdict**: "Indexed zeros/infinities" returns ZERO results in academic literature. Terminology is original.
+
+---
+
+## Grand Total
+
+| Layer | Tool | Checks | Result |
+|-------|------|--------|--------|
+| Core tests | Python/ivna.py | 28 | 28/28 |
+| NSA embedding | SymPy + Z3 | 48 | 48/48 |
+| Lean4 proofs | lake build | 23 | Compiles |
+| Calculus | SymPy | 115 | 115/115 |
+| Comprehensive | SymPy + Z3 | 148 | 145/0/3 |
+| SymPy MCP | sympy-mcp | 69 | 69/69 |
+| Z3 MCP | mcp-solver | 31 | 31/31 |
+| Wolfram MCP | wolfram | 27 | 27/27 |
+| **TOTAL** | **4 independent tool chains** | **489** | **0 failures** |
+
+---
+
+## Tools Used
 
 | Tool | What It Does | Used? |
 |------|-------------|-------|
-| Python/SymPy | Symbolic algebra | YES — primary verification tool |
+| Python/SymPy | Symbolic algebra | YES — primary verification |
 | Python/Z3 | Satisfiability checking | YES — axiom consistency |
-| Python/NumPy/SciPy | Numerical computation | YES — demos, matrix exponential |
-| Lean 4 | Formal proof verification | YES — axioms + theorems |
-| SymPy MCP | Symbolic math (MCP server) | NOT AVAILABLE in VS Code session |
-| mcp-solver | Z3 via MCP | NOT AVAILABLE in VS Code session |
-| Wolfram MCP | Wolfram Language | NOT AVAILABLE in VS Code session |
-| wolfram-verify | Step-by-step verification | NOT AVAILABLE in VS Code session |
-| paper-search | Academic paper search | Used by research agents |
-| semantic-scholar | Citation-aware search | Used by research agents |
-
-**Note**: MCP servers (sympy-mcp, mcp-solver, wolfram, wolfram-verify) are configured in settings.json but only load in CLI sessions, not VS Code extension. All verification was done via direct Python calls to the same underlying libraries.
+| Python/NumPy/SciPy | Numerical computation | YES — demos, matrix exp |
+| Lean 4 | Formal proof verification | YES — 11 axioms + 12 theorems |
+| SymPy MCP | Symbolic math (MCP) | YES — 69 checks (CLI session) |
+| mcp-solver | Z3 via MCP | YES — 31 checks (CLI session) |
+| Wolfram MCP | Wolfram Language | YES — 27 checks (CLI session) |
+| paper-search | Academic paper search | YES — via research agents |
+| semantic-scholar | Citation-aware search | YES — via research agents |

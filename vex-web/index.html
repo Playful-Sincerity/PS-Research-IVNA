@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEX Calculator — Division by Zero, Solved</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+  h1 { font-size: 1.8rem; font-weight: 300; margin-bottom: 0.3rem; color: #fff; }
+  .subtitle { color: #888; font-size: 0.95rem; margin-bottom: 2rem; }
+  .calculator { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 1.5rem; width: 100%; max-width: 480px; }
+  .display { background: #111; border: 1px solid #2a2a2a; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; min-height: 80px; font-family: 'SF Mono', 'Fira Code', monospace; }
+  .display-input { font-size: 1.1rem; color: #888; margin-bottom: 0.3rem; }
+  .display-result { font-size: 1.8rem; color: #4fc3f7; font-weight: 500; }
+  .display-result.error { color: #ef5350; }
+  .display-result.virtual { color: #81c784; }
+  .mode-toggle { display: flex; margin-bottom: 1rem; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+  .mode-btn { flex: 1; padding: 0.6rem; text-align: center; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; background: #1a1a1a; color: #888; border: none; }
+  .mode-btn.active { background: #2a2a2a; color: #fff; font-weight: 600; }
+  .mode-btn:first-child { border-right: 1px solid #333; }
+  input[type="text"] { width: 100%; padding: 0.8rem; font-size: 1.1rem; font-family: 'SF Mono', 'Fira Code', monospace; background: #111; border: 1px solid #333; border-radius: 8px; color: #fff; outline: none; margin-bottom: 0.8rem; }
+  input[type="text"]:focus { border-color: #4fc3f7; }
+  input[type="text"]::placeholder { color: #555; }
+  .btn { width: 100%; padding: 0.7rem; font-size: 1rem; background: #2196f3; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background 0.2s; }
+  .btn:hover { background: #1976d2; }
+  .history { margin-top: 1rem; max-height: 200px; overflow-y: auto; }
+  .history-item { padding: 0.4rem 0; border-bottom: 1px solid #1a1a1a; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; }
+  .history-item .hi-input { color: #666; }
+  .history-item .hi-result { color: #4fc3f7; }
+  .history-item .hi-result.std { color: #ef5350; }
+  .examples { margin-top: 2rem; width: 100%; max-width: 480px; }
+  .examples h3 { font-size: 0.9rem; color: #888; margin-bottom: 0.8rem; font-weight: 400; }
+  .example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .example-btn { padding: 0.5rem; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #aaa; font-family: 'SF Mono', monospace; font-size: 0.8rem; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .example-btn:hover { border-color: #4fc3f7; color: #fff; }
+  .info { margin-top: 2rem; max-width: 480px; color: #666; font-size: 0.8rem; line-height: 1.5; text-align: center; }
+  .info a { color: #4fc3f7; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<h1>VEX Calculator</h1>
+<p class="subtitle">Virtual EXtended Arithmetic — powered by IVNA</p>
+
+<div class="calculator">
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="setMode('vex')">VEX Mode</button>
+    <button class="mode-btn" onclick="setMode('standard')">Standard Mode</button>
+  </div>
+
+  <div class="display">
+    <div class="display-input" id="displayInput">&nbsp;</div>
+    <div class="display-result" id="displayResult">0</div>
+  </div>
+
+  <input type="text" id="expression" placeholder="Try: 5 / 0" autofocus
+         onkeydown="if(event.key==='Enter') compute()">
+  <button class="btn" onclick="compute()">Compute</button>
+
+  <div class="history" id="history"></div>
+</div>
+
+<div class="examples">
+  <h3>Try these:</h3>
+  <div class="example-grid">
+    <div class="example-btn" onclick="tryExample('5 / 0')">5 / 0</div>
+    <div class="example-btn" onclick="tryExample('inf_5 * 0_1')">∞₅ × 0₁</div>
+    <div class="example-btn" onclick="tryExample('10 / 0 + 6 / 0')">10/0 + 6/0</div>
+    <div class="example-btn" onclick="tryExample('0_6 / 0_3')">0₆ / 0₃</div>
+    <div class="example-btn" onclick="tryExample('-3 / 0')">-3 / 0</div>
+    <div class="example-btn" onclick="tryExample('inf_10 / inf_5')">∞₁₀ / ∞₅</div>
+    <div class="example-btn" onclick="tryExample('0_3 * inf_7')">0₃ × ∞₇</div>
+    <div class="example-btn" onclick="tryExample('1 / 0 * 0')">1/0 × 0</div>
+  </div>
+</div>
+
+<div class="info">
+  <strong>What is this?</strong> Standard math says 5÷0 = ERROR.<br>
+  IVNA says 5÷0 = ∞₅ — an infinity that remembers it came from 5.<br>
+  Multiply back by zero and you recover the original: ∞₅ × 0₁ = 5.<br><br>
+  <a href="#">Read the paper</a> · <a href="#">View the code</a> · <a href="#">Lean4 proofs</a>
+</div>
+
+<script>
+// IVNA Virtual Number Engine
+class VNum {
+  constructor(type, index, order = 1) {
+    this.type = type;   // 'real', 'zero', 'inf'
+    this.index = index; // the x in 0_x or ∞_x
+    this.order = order; // the n in 0^n_x
+  }
+  toString() {
+    if (this.type === 'real') return fmtNum(this.index);
+    const sym = this.type === 'zero' ? '0' : '∞';
+    const ord = this.order > 1 ? `^${this.order}` : '';
+    const idx = fmtNum(this.index);
+    return `${sym}${ord}_{${idx}}`;
+  }
+}
+
+function fmtNum(n) {
+  if (Number.isInteger(n)) return n.toString();
+  const r = n.toFixed(6).replace(/\.?0+$/, '');
+  return r;
+}
+
+function vReal(n) { return new VNum('real', n); }
+function vZero(x, o=1) { return new VNum('zero', x, o); }
+function vInf(x, o=1) { return new VNum('inf', x, o); }
+
+function vmul(a, b) {
+  if (a.type === 'real' && b.type === 'real') return vReal(a.index * b.index);
+  if (a.type === 'real' && b.type === 'zero') return vZero(a.index * b.index, b.order);
+  if (a.type === 'real' && b.type === 'inf') return vInf(a.index * b.index, b.order);
+  if (a.type === 'zero' && b.type === 'real') return vmul(b, a);
+  if (a.type === 'inf' && b.type === 'real') return vmul(b, a);
+  if (a.type === 'zero' && b.type === 'zero') return vZero(a.index * b.index, a.order + b.order);
+  if (a.type === 'inf' && b.type === 'inf') return vInf(a.index * b.index, a.order + b.order);
+  if (a.type === 'zero' && b.type === 'inf') {
+    if (a.order === b.order) return vReal(a.index * b.index);
+    if (a.order > b.order) return vZero(a.index * b.index, a.order - b.order);
+    return vInf(a.index * b.index, b.order - a.order);
+  }
+  if (a.type === 'inf' && b.type === 'zero') return vmul(b, a);
+}
+
+function vdiv(a, b) {
+  if (b.type === 'real' && b.index === 0) {
+    // Standard division by plain zero: treat as 0_1
+    if (a.type === 'real') return vInf(a.index, 1);
+  }
+  if (a.type === 'real' && b.type === 'real') return vReal(a.index / b.index);
+  if (a.type === 'real' && b.type === 'zero') return vInf(a.index / b.index, b.order);
+  if (a.type === 'real' && b.type === 'inf') return vZero(a.index / b.index, b.order);
+  if (a.type === 'zero' && b.type === 'zero' && a.order === b.order) return vReal(a.index / b.index);
+  if (a.type === 'inf' && b.type === 'inf' && a.order === b.order) return vReal(a.index / b.index);
+  if (a.type === 'zero' && b.type === 'real') return vZero(a.index / b.index, a.order);
+  if (a.type === 'inf' && b.type === 'real') return vInf(a.index / b.index, a.order);
+  return vReal(NaN); // unsupported combo
+}
+
+function vadd(a, b) {
+  if (a.type === 'real' && b.type === 'real') return vReal(a.index + b.index);
+  if (a.type === b.type && a.order === b.order) {
+    const idx = a.index + b.index;
+    if (idx === 0) return vReal(0); // D-INDEX-ZERO
+    return new VNum(a.type, idx, a.order);
+  }
+  // Mixed: return the dominant term for display
+  if (a.type === 'inf') return a;
+  if (b.type === 'inf') return b;
+  return a;
+}
+
+function vsub(a, b) {
+  if (a.type === 'real' && b.type === 'real') return vReal(a.index - b.index);
+  if (a.type === b.type && a.order === b.order) {
+    const idx = a.index - b.index;
+    if (idx === 0) return vReal(0); // D-INDEX-ZERO
+    return new VNum(a.type, idx, a.order);
+  }
+  return a; // dominant term
+}
+
+// Parser
+function parse(expr) {
+  expr = expr.trim()
+    .replace(/×/g, '*').replace(/÷/g, '/')
+    .replace(/∞_?(\d+\.?\d*)/g, 'INF($1)')
+    .replace(/inf_(\d+\.?\d*)/g, 'INF($1)')
+    .replace(/0_(\d+\.?\d*)/g, 'ZERO($1)');
+
+  // Tokenize
+  const tokens = [];
+  let i = 0;
+  while (i < expr.length) {
+    if (expr[i] === ' ') { i++; continue; }
+    if (expr.startsWith('INF(', i)) {
+      const end = expr.indexOf(')', i);
+      tokens.push(vInf(parseFloat(expr.slice(i+4, end))));
+      i = end + 1;
+    } else if (expr.startsWith('ZERO(', i)) {
+      const end = expr.indexOf(')', i);
+      tokens.push(vZero(parseFloat(expr.slice(i+5, end))));
+      i = end + 1;
+    } else if ('+-*/'.includes(expr[i])) {
+      tokens.push(expr[i]);
+      i++;
+    } else if (expr[i] === '(' || expr[i] === ')') {
+      tokens.push(expr[i]);
+      i++;
+    } else {
+      let num = '';
+      while (i < expr.length && (expr[i].match(/[\d.\-]/) || (expr[i] === '-' && num === ''))) {
+        num += expr[i]; i++;
+      }
+      if (num) tokens.push(vReal(parseFloat(num)));
+    }
+  }
+
+  // Simple left-to-right eval with precedence
+  function evalTokens(toks) {
+    // Handle * / first
+    let i = 0;
+    while (i < toks.length) {
+      if (toks[i] === '*' || toks[i] === '/') {
+        const a = toks[i-1], b = toks[i+1];
+        const r = toks[i] === '*' ? vmul(a, b) : vdiv(a, b);
+        toks.splice(i-1, 3, r);
+      } else {
+        i++;
+      }
+    }
+    // Then + -
+    i = 0;
+    while (i < toks.length) {
+      if (toks[i] === '+' || toks[i] === '-') {
+        const a = toks[i-1], b = toks[i+1];
+        const r = toks[i] === '+' ? vadd(a, b) : vsub(a, b);
+        toks.splice(i-1, 3, r);
+      } else {
+        i++;
+      }
+    }
+    return toks[0];
+  }
+
+  return evalTokens(tokens);
+}
+
+// UI
+let mode = 'vex';
+let historyItems = [];
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.mode-btn:${m === 'vex' ? 'first' : 'last'}-child`).classList.add('active');
+}
+
+function compute() {
+  const input = document.getElementById('expression').value.trim();
+  if (!input) return;
+
+  const dispInput = document.getElementById('displayInput');
+  const dispResult = document.getElementById('displayResult');
+
+  dispInput.textContent = input;
+
+  if (mode === 'standard') {
+    try {
+      const val = Function('"use strict"; return (' + input.replace(/×/g,'*').replace(/÷/g,'/') + ')')();
+      dispResult.textContent = val;
+      dispResult.className = 'display-result' + (isNaN(val) || !isFinite(val) ? ' error' : '');
+      addHistory(input, String(val), 'std');
+    } catch(e) {
+      dispResult.textContent = 'ERROR';
+      dispResult.className = 'display-result error';
+      addHistory(input, 'ERROR', 'std');
+    }
+  } else {
+    try {
+      const result = parse(input);
+      const str = result.toString();
+      dispResult.textContent = str;
+      dispResult.className = 'display-result' + (result.type !== 'real' ? ' virtual' : '');
+      addHistory(input, str, 'vex');
+    } catch(e) {
+      dispResult.textContent = 'Parse error';
+      dispResult.className = 'display-result error';
+    }
+  }
+
+  document.getElementById('expression').value = '';
+  document.getElementById('expression').focus();
+}
+
+function addHistory(input, result, type) {
+  historyItems.unshift({ input, result, type });
+  if (historyItems.length > 20) historyItems.pop();
+  const container = document.getElementById('history');
+  container.innerHTML = historyItems.map(h =>
+    `<div class="history-item"><span class="hi-input">${h.input} = </span><span class="hi-result ${h.type === 'std' ? 'std' : ''}">${h.result}</span></div>`
+  ).join('');
+}
+
+function tryExample(expr) {
+  document.getElementById('expression').value = expr;
+  compute();
+}
+</script>
+</body>
+</html>
