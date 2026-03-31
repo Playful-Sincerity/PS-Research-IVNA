@@ -5,3 +5,6 @@ __pycache__/
 .env
 .venv/
 node_modules/
+
+# Internal strategy docs — not for public repo
+distribution/
