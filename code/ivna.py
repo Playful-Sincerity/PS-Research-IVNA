@@ -150,7 +150,11 @@ class Virtual:
         if isinstance(other, Virtual):
             if self.kind == other.kind and self.order == other.order:
                 # 0_x + 0_y = 0_{x+y}, ∞_x + ∞_y = ∞_{x+y}
-                return Virtual(self.kind, self.index + other.index, self.order)
+                # D-INDEX-ZERO: if index becomes 0, exit to real 0
+                new_index = self.index + other.index
+                if new_index == 0:
+                    return 0
+                return Virtual(self.kind, new_index, self.order)
             else:
                 # Different kinds or orders: coexist as tuple
                 return (self, '+', other)
