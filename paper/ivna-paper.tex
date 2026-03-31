@@ -51,7 +51,7 @@ and indeterminate forms algebraically operable. Where standard mathematics
 returns ``undefined'' for expressions like $5/0$, IVNA returns $\vi{5}$---an
 indexed infinity that preserves the numerator's identity and permits continued
 computation, including exact recovery of the original value via
-$\vi{5} \cdot \vz{1} = 5$. More generally, $y / \vz{x} = \vi{y/x}$ for any
+$\vi{5} \cdot \vz{1} = 5$. More generally, $y / \vz{x} = \vi{\frac{y}{x}}$ for any
 real $y$ and index $x$.
 
 The key innovation is the \textbf{indexed product rule}: $\vz{x} \cdot \vi{y} = xy$,
@@ -240,7 +240,7 @@ The contributions of this paper are:
 
 Before proceeding, we note that every axiom and theorem in this section
 is machine-verified. The complete Lean~4 formalization, a Python test
-suite (28 core tests, 145 comprehensive checks), and a VEAcalculator
+suite (28 core tests, 145 comprehensive checks), and a VEA calculator
 demo are available at:
 
 \begin{center}
@@ -868,15 +868,15 @@ $\vz{1}$ recovers $5$. No information is lost.
 \end{tabular}
 \end{center}
 
-A working VEAcalculator prototype is included in the supplementary
+A working VEA calculator prototype is included in the supplementary
 repository. In our tests, VEA mode resolves each of the standard NaN-producing
 operations in IEEE~754, provided the operand indices are tracked.
 
 Fog~\cite{fog2019} has proposed encoding exception metadata in NaN
-payloads for the ForwardCom architecture. VEAdiffers: Fog's payloads
+payloads for the ForwardCom architecture. VEA differs: Fog's payloads
 track \emph{where} the exception occurred (code address), while IVNA's
 indices track \emph{what} the mathematical provenance is (numerator,
-denominator). VEAindices are algebraically operable; Fog's payloads
+denominator). VEA indices are algebraically operable; Fog's payloads
 are not.
 
 
@@ -1050,7 +1050,7 @@ between zero and infinity.
 
 \begin{enumerate}
 \item \textbf{Integration formalization} in Lean~4.
-\item \textbf{VEAimplementation} in a production language with IEEE~754
+\item \textbf{VEA implementation} in a production language with IEEE~754
   benchmarks.
 \item \textbf{Complex indices}: systematic treatment of directional
   singularities where the index encodes approach direction.
