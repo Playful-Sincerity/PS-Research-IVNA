@@ -1,0 +1,33 @@
+IVNA Critical Claim Verification — Full SymPy Output
+======================================================================
+✓ PASS  Claim 1: 0_x·∞_y = xy
+        (x·ε)·(y/ε) = x*y
+
+✓ PASS  Claim 2: Roundtrip
+        [y/(x·ε)]·(x·ε) = y
+
+✓ PASS  Claim 3: e definition
+        (1+1/N)^N → e as N→∞ (known limit)
+
+✓ PASS  Claim 4: Scaling symmetry
+        (x/n)·(ny) = x*y
+
+✓ PASS  Claim 5: ∫₀¹ x dx = 1/2
+        limit = 1/2
+
+✓ PASS  Claim 6: FTC
+        f·h/h = f_x
+
+✓ PASS  Claim 7: ζ(-1) = -1/12
+        -B₂/2 = -1/12
+
+✓ PASS  Claim 8: Residues
+        0_x · ∞_{1/x} = x·(1/x) = 1
+
+CAVEATS:
+  Claim 7: ζ(-1) = -1/12 is verified, but the claim that -1/12 is
+  "structurally embedded" in Σn needs careful framing. It comes from
+  analytic continuation, not from the partial sum N(N+1)/2.
+
+  Claim 8: Residue = IVNA product rule is correct but is a restatement
+  of what NSA already does. IVNA adds notation, not new math.
