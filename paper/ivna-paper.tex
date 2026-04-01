@@ -29,6 +29,7 @@
 \newcommand{\vin}[2]{\infty^{#1}_{#2}}  % higher-order inf: \vin{n}{x} -> ∞^n_x
 \newcommand{\ceq}{\mathrel{=\!\!;}}     % collapse equals: \ceq -> =;
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
 
 \title{Indexed Virtual Number Algebra: \\
 A Structured Interface for Division by Zero \\
@@ -149,10 +150,10 @@ interface that makes division by zero algebraically operable.
 
 \subsection{IVNA's Proposal}
 
-Indexed Virtual Number Algebra (IVNA) attaches a real-valued \emph{index}
+Indexed Virtual Number Algebra (IVNA) attaches a nonzero \emph{index}
 to every zero and every infinity. Instead of a single zero, there is a
-family $\{\vz{x} : x \in \R \setminus \{0\}\}$. Instead of a single
-infinity, there is a family $\{\vi{x} : x \in \R \setminus \{0\}\}$.
+family $\{\vz{x} : x \in \C \setminus \{0\}\}$. Instead of a single
+infinity, there is a family $\{\vi{x} : x \in \C \setminus \{0\}\}$.
 The index $x$ tracks the \emph{weight}---informally, ``how much zero''
 or ``how much infinity'' the object represents.
 
@@ -272,7 +273,7 @@ their indices. We now define the objects and rules that make this work.
 \begin{definition}[Virtual Numbers]
 \label{def:virtual}
 A \textbf{virtual number} is either an \emph{indexed zero} $\vz{x}$ or an
-\emph{indexed infinity} $\vi{x}$, where $x \in \R \setminus \{0\}$ is the
+\emph{indexed infinity} $\vi{x}$, where $x \in \C \setminus \{0\}$ is the
 \textbf{index}. We call $x$ the \emph{weight} of the virtual number.
 
 A \textbf{non-virtual number} is any element of $\R$ (or $\mathbb{C}$).
@@ -286,11 +287,13 @@ loss of content.
 \end{definition}
 
 \begin{remark}
-The index domain is $\R \setminus \{0\}$, not $\R$. The excluded case
+The index domain is $\C \setminus \{0\}$, not $\C$. The excluded case
 $x = 0$ is addressed in Axiom~\ref{ax:indexzero} below: when an
 operation produces index zero, the result exits the virtual system
 to the real number $0$. This is analogous to $i - i = 0$ exiting
-the imaginary numbers.
+the imaginary numbers. For the core algebra (Sections~\ref{sec:core}--\ref{sec:calculus}),
+real indices suffice; complex indices are needed for directional
+information (Section~\ref{sec:extended}).
 \end{remark}
 
 \subsection{Multiplication}
@@ -403,7 +406,7 @@ x\omega_0$ for finite~$r$.
 \begin{axiom}[Index Zero Rule (D-INDEX-ZERO)]
 \label{ax:indexzero}
 When an operation produces index $0$, the result exits the virtual number
-system to the real number $0$. The index domain is $\R \setminus \{0\}$.
+system to the real number $0$. The index domain is $\C \setminus \{0\}$.
 \end{axiom}
 
 For example, $\vz{3} + \vz{-3} = 0$ (not $\vz{0}$). This is
@@ -443,7 +446,7 @@ projecting them to their standard values:
 \[
 \vz{x} \ceq 0, \qquad \vi{x} \ceq \infty
 \]
-for all $x \in \R \setminus \{0\}$. This is analogous to the standard part
+for all $x \in \C \setminus \{0\}$. This is analogous to the standard part
 function $\mathrm{st}()$ in Non-Standard Analysis.
 \end{definition}
 
@@ -460,12 +463,19 @@ Indexed zeros and indexed infinities are reciprocals:
 \subsection{Index Domain}
 
 \begin{remark}
-The index domain is $\R \setminus \{0\}$. The restriction $x \neq 0$ is
+The index domain is $\C \setminus \{0\}$. The restriction $x \neq 0$ is
 necessary: $\vz{0}$ would represent ``zero with no weight,'' which under
 the multiplication rule $\vz{0} \cdot \vi{1} = 0 \cdot 1 = 0$ yields a
 result categorically different from $\vzn{2}{1} \cdot \vi{1} = \vz{1}$.
 The D-INDEX-ZERO axiom resolves this by routing index-zero results back to
-$\R$.
+$\R$. Complex indices encode directional information: $0_{e^{i\theta}}$
+represents a zero with approach angle $\theta$.
+
+Virtual-valued indices (e.g., $0_{0_z}$) are permitted but reduce to
+order changes under the NSA embedding: $0_{0_z} = z\varepsilon_0^2 =
+0^2_z$ (a higher-order zero), while $0_{\infty_z} = z$ exits to a real
+number. No recursive regress arises---virtual indices are syntactic sugar
+for the existing order hierarchy.
 \end{remark}
 
 
@@ -758,9 +768,7 @@ this becomes: $(1 + \vz{\text{rate}})^{\vi{\text{time}}} =
 e^{\text{rate} \times \text{time}}$. The indices carry the physical
 dimensions.
 
-Euler's formula extends naturally once the index domain is widened
-from $\R \setminus \{0\}$ to $\mathbb{C} \setminus \{0\}$ (a natural
-extension not formally developed here):
+Euler's formula extends naturally with complex indices:
 \[
 e^{i\theta} = (1 + \vz{i})^{\vi{\theta}} = \cos\theta + i\sin\theta.
 \]
@@ -922,6 +930,16 @@ Bergstra's survey~\cite{bergstra2019} of the design space.
 Wenmackers~\cite{wenmackers2024} provides a philosophical comparison
 of methods for comparing infinite quantities.
 
+In algebraic geometry, \emph{blow-ups} resolve indeterminacy at singular
+points by replacing a point with the projective space of approach
+directions. IVNA's indexed infinities serve an analogous function:
+where a blow-up parametrizes approach directions geometrically via an
+exceptional divisor, IVNA parametrizes them arithmetically via the
+index. The key difference is that blow-ups are geometric constructions
+requiring scheme-theoretic machinery, while IVNA provides a closed-form
+arithmetic on the resolved objects, making it applicable in discrete
+and computational settings where geometric resolution is unavailable.
+
 \subsection{Comparison}
 
 \begin{center}
@@ -1061,6 +1079,12 @@ between zero and infinity.
   virtual arguments to all first-order definable functions. This requires
   engaging with model-theoretic foundations (ultrafilters, \L o\'s's theorem)
   while preserving IVNA's notational accessibility.
+\item \textbf{Reparametrization invariance}: if $f(x) = a \cdot h(x)$
+  and $g(x) = b \cdot h(x)$ for any $h$ with $h(c) = 0$, the IVNA index
+  of $f/g$ at $c$ reduces to $a/b$ regardless of the shared factor. This
+  algebraic invariance property---defined at the point, not via limits---is
+  a candidate for a formal theorem connecting IVNA's index algebra to
+  classical singularity classification.
 \end{enumerate}
 
 \subsection{The Vision}
