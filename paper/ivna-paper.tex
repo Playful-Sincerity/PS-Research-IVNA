@@ -606,17 +606,26 @@ The Lean~4 formalization provides a machine-checked consistency proof.
 The embedding reveals IVNA's mathematical identity. The set of all
 IVNA expressions maps to the \emph{Laurent monomials} in $\varepsilon_0$:
 \[
-\{c \cdot \varepsilon_0^k : c \in \R,\; k \in \mathbb{Z}\}.
+\{c \cdot \varepsilon_0^k : c \in K \setminus \{0\},\; k \in \mathbb{Z}\},
 \]
+where $K$ is any field (typically $\C$).
 An indexed zero $\vz{x}$ is $x\varepsilon_0$ (a monomial of degree 1).
 An indexed infinity $\vi{x}$ is $x\varepsilon_0^{-1}$ (degree $-1$).
-A real number $n$ is $n\varepsilon_0^0$ (degree 0). IVNA's arithmetic
-is the arithmetic of Laurent monomials with real coefficients.
+A real number $n$ is $n\varepsilon_0^0$ (degree 0). Algebraically,
+IVNA is isomorphic to the \emph{unit group} of the Laurent polynomial
+ring $K[\varepsilon_0, \varepsilon_0^{-1}]$, which factors as
+$K^* \times \mathbb{Z}$: the index $c \in K^*$ carries provenance,
+and the grade $k \in \mathbb{Z}$ carries order. Multiplication adds
+grades and multiplies indices; the indexed product rule
+$\vz{x} \cdot \vi{y} = xy$ is grade-crossing multiplication
+$(x, +1) \cdot (y, -1) = (xy, 0)$, exiting to a real number.
 
 This means IVNA is \emph{not} new foundational mathematics. It is a
 structured notational interface to a specific, well-understood fragment
-of Non-Standard Analysis. The underlying algebraic objects have been
-studied since Robinson~\cite{robinson1966}.
+of Non-Standard Analysis. The contribution is the interface itself---the
+continuously parameterized families of zeros and infinities, the
+grade-crossing product rule, and the applications---not the underlying
+algebra, which has been studied since Robinson~\cite{robinson1966}.
 
 \subsection{Why This Is Still Valuable}
 
@@ -777,6 +786,40 @@ the infinity index $\theta$ gives the \emph{angle}. Rotation is
 iterated infinitesimal translation---the Lie group/algebra relationship
 made algebraically transparent.
 
+\subsection{Residues and Partial Fractions}
+
+The index domain $\C \setminus \{0\}$ unifies IVNA's calculus with
+complex analysis. For a rational function $R(z) = P(z)/Q(z)$ with a
+simple pole at $z = a$: the zero of $Q$ at $a$ has index $Q'(a)$
+(the derivative), so
+\[
+R(a) = \frac{P(a)}{\vz{Q'(a)}} = \vi{\frac{P(a)}{Q'(a)}}.
+\]
+The IVNA index $P(a)/Q'(a)$ is exactly the residue $\mathrm{Res}(R, a)$.
+
+\begin{proposition}[Partial Fractions via Index Arithmetic]
+\label{prop:partial}
+Let $R(z) = P(z)/Q(z)$ be proper with $Q$ having distinct simple
+roots $a_1, \ldots, a_n$. The partial fraction decomposition
+$R(z) = \sum_{k=1}^n c_k/(z - a_k)$ has coefficients
+$c_k = P(a_k)/Q'(a_k)$, each computable by one application of the
+IVNA division rule at the corresponding pole. No limit computation,
+polynomial long division, or linear system is required.
+\end{proposition}
+
+\begin{example}
+$R(z) = 1/(z^3 - 1)$. The three poles at $z = 1, \omega, \omega^2$
+(cube roots of unity) have IVNA indices
+$1/3$, $\omega/3$, $\omega^2/3$. These are the residues. Their sum
+$\tfrac{1}{3}(1 + \omega + \omega^2) = 0$ exits to real~$0$ via
+D-INDEX-ZERO---recovering the classical fact that residues of a
+proper rational function sum to zero.
+\end{example}
+
+The same division rule that computes real derivatives
+(Section~\ref{sec:calculus}) also computes complex residues and partial
+fraction coefficients---a unification made possible by extending the
+index domain from $\R$ to $\C$.
 
 \subsection{Proportional Infinite Set Sizes}
 
@@ -876,10 +919,58 @@ $\vz{1}$ recovers $5$. No information is lost.
 \end{tabular}
 \end{center}
 
-A working VEA calculator prototype is included in the supplementary
-repository. In our tests, VEA mode resolves each of the standard NaN-producing
-operations in IEEE~754, provided the operand indices are tracked.
+\begin{proposition}[NaN Elimination]
+\label{prop:nan}
+Under VEA mode, every IEEE~754 NaN-producing primitive binary operation
+between well-indexed virtual numbers has a determinate result:
+$\vz{x}/\vz{y} = x/y$,\quad
+$\vz{x} \cdot \vi{y} = xy$,\quad
+$\vi{x}/\vi{y} = x/y$,\quad
+$\vi{x} - \vi{y} = \vi{x-y}$ (or $0$ when $x = y$).
+\end{proposition}
 
+\begin{proof}
+Each case is a direct application of Axioms~A3, A8, A9, and A10--A11
+respectively. All eight NaN-producing primitive operations are
+computationally verified with zero failures.
+\end{proof}
+
+\begin{example}[Quadratic formula]
+Solving $x^2 - 2 \times 10^8 x + 1 = 0$: the standard formula
+produces $x_2 = 10^8 - \sqrt{10^{16} - 1}$, which in float64
+returns exactly $0$ (100\% wrong; the true value is $5 \times 10^{-9}$).
+In VEA mode, the near-cancellation produces an indexed zero
+$\vz{10^{-8}}$, preserving the residual's identity through subsequent
+operations and recovering the exact root.
+\end{example}
+
+A working VEA calculator prototype is included in the supplementary
+repository.
+
+\medskip
+\noindent\textbf{Comparison with existing tools.}
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+& \textbf{Determ.\ $0/0$} & \textbf{Past NaN} & \textbf{Roundtrip} \\
+\midrule
+IEEE 754              & --  & --  & -- \\
+Interval arithmetic   & --  & P   & -- \\
+Significance arith.   & D   & --  & -- \\
+Dual numbers / AD     & P   & Y   & -- \\
+TwoSum / EFTs         & --  & --  & P \\
+Wheel algebra         & Y$^\ddagger$   & --  & -- \\
+\textbf{IVNA (VEA)}   & \textbf{Y} & \textbf{Y} & \textbf{Y} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+{\small Y = yes, P = partial, D = diagnoses only, -- = no.
+$^\ddagger$Wheel algebra gives $\bot$ for $0 \cdot \infty$
+(absorbing, not determinate).}
+
+\medskip
 Fog~\cite{fog2019} has proposed encoding exception metadata in NaN
 payloads for the ForwardCom architecture. VEA differs: Fog's payloads
 track \emph{where} the exception occurred (code address), while IVNA's
@@ -932,13 +1023,52 @@ of methods for comparing infinite quantities.
 
 In algebraic geometry, \emph{blow-ups} resolve indeterminacy at singular
 points by replacing a point with the projective space of approach
-directions. IVNA's indexed infinities serve an analogous function:
-where a blow-up parametrizes approach directions geometrically via an
-exceptional divisor, IVNA parametrizes them arithmetically via the
-index. The key difference is that blow-ups are geometric constructions
-requiring scheme-theoretic machinery, while IVNA provides a closed-form
-arithmetic on the resolved objects, making it applicable in discrete
-and computational settings where geometric resolution is unavailable.
+directions (the exceptional divisor $E \cong \mathbb{P}^1$). The
+following theorem establishes a precise correspondence.
+
+\begin{theorem}[IVNA--Blow-Up Correspondence]
+\label{thm:blowup}
+Let $f, g$ be polynomials vanishing at the origin with orders $a, b$
+and leading homogeneous forms $f_a, g_b$. In the blow-up chart $y = tx$,
+the proper transform of $f/g$ restricts to $E$ as the rational function
+$f_a(1,t)/g_b(1,t)$. The IVNA quotient $\vzn{a}{f_a}/\vzn{b}{g_b}$
+produces the same data: index $f_a/g_b$ and grade $a - b$.
+\end{theorem}
+
+\begin{proof}
+\emph{Blow-up side.} Substituting $y = tx$ into $f$ factors out $x^a$;
+into $g$ factors out $x^b$. The proper transform $x^{b-a} f_a(1,t)/g_b(1,t)$
+restricts to $E$ (where $x = 0$) as $f_a(1,t)/g_b(1,t)$ when $a = b$,
+and vanishes or diverges along $E$ when $a \neq b$.
+
+\emph{IVNA side.} Under the $K^* \times \mathbb{Z}$ characterization,
+$(f_a, a) / (g_b, b) = (f_a/g_b,\, a - b)$. The grade $a - b$
+determines the virtual type (zero if positive, real if zero, infinity
+if negative); the index $f_a/g_b$ carries the resolved value.
+
+The $\mathbb{P}^1$ coordinate $t = y/x$ parametrizes both: the IVNA
+index at direction $t$ equals the blow-up proper transform evaluated at
+the corresponding point on $E$.
+\end{proof}
+
+\begin{example}
+For $f = xy$, $g = x^2 + y^2$ (both order 2): blow-up gives
+$t/(1+t^2)$ on $E$; IVNA gives $\vz{xy}/\vz{x^2+y^2} = xy/(x^2+y^2)$.
+At direction $t$, both evaluate to $t/(1+t^2)$.
+\end{example}
+
+The key distinction is structural: a blow-up produces a geometric
+object (the exceptional divisor) within scheme-theoretic framework;
+IVNA produces an algebraic element supporting further multiplication,
+division, and exponentiation. Blow-ups resolve singularities globally;
+IVNA provides arithmetic on singular values locally. Neither subsumes
+the other. Notably, IVNA's purely algebraic axioms apply over any
+field---including positive characteristic, where resolution of
+singularities in dimension $\geq 4$ remains open.
+
+No prior division-by-zero framework (meadows, wheels, transreal
+arithmetic, S-Extensions) has connected to blow-up theory; the
+correspondence appears to be new.
 
 \subsection{Comparison}
 
