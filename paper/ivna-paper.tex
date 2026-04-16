@@ -773,14 +773,16 @@ $x \neq y$, and exits to real $0$ when $x = y$ (D-INDEX-ZERO).
 
 In IVNA, integration is literal summation. The definite integral
 $\int_0^1 f(x)\,dx$ is the sum of $\vi{1}$ terms, each evaluating
-$f$ at position $i \cdot \vz{1}$ and weighting by step width $\vz{1}$:
+$f$ at position $k \cdot \vz{1}$ and weighting by step width $\vz{1}$
+(we use $k$ rather than $i$ here to avoid collision with the imaginary
+unit used elsewhere in the paper):
 \[
-\int_0^1 f(x)\,dx = \sum_{i=0}^{\vi{1}} f(i \cdot \vz{1}) \cdot \vz{1}.
+\int_0^1 f(x)\,dx = \sum_{k=0}^{\vi{1}} f(k \cdot \vz{1}) \cdot \vz{1}.
 \]
 For $f(x) = x$:
 \begin{align*}
-\sum_{i=0}^{\vi{1}} (i \cdot \vz{1}) \cdot \vz{1}
-&= \vzn{2}{1} \cdot \sum_{i=0}^{\vi{1}} i
+\sum_{k=0}^{\vi{1}} (k \cdot \vz{1}) \cdot \vz{1}
+&= \vzn{2}{1} \cdot \sum_{k=0}^{\vi{1}} k
 = \vzn{2}{1} \cdot \frac{\vi{1}(\vi{1}+1)}{2} \\
 &= \vzn{2}{1} \cdot \frac{\vin{2}{1}}{2}
 = \frac{1}{2}. \quad\checkmark
