@@ -420,10 +420,22 @@ function vdiv(a, b) {
   if (a.type === 'real' && b.type === 'real') return vReal(a.index / b.index);
   if (a.type === 'real' && b.type === 'zero') return vInf(a.index / b.index, b.order);
   if (a.type === 'real' && b.type === 'inf')  return vZero(a.index / b.index, b.order);
-  if (a.type === 'zero' && b.type === 'zero' && a.order === b.order) return vReal(a.index / b.index);
-  if (a.type === 'inf'  && b.type === 'inf'  && a.order === b.order) return vReal(a.index / b.index);
   if (a.type === 'zero' && b.type === 'real') return vZero(a.index / b.index, a.order);
   if (a.type === 'inf'  && b.type === 'real') return vInf(a.index / b.index, a.order);
+  if (a.type === 'zero' && b.type === 'zero') {
+    var idx = a.index / b.index;
+    if (a.order === b.order) return vReal(idx);
+    if (a.order > b.order)  return vZero(idx, a.order - b.order);
+    return vInf(idx, b.order - a.order);
+  }
+  if (a.type === 'inf' && b.type === 'inf') {
+    var idx = a.index / b.index;
+    if (a.order === b.order) return vReal(idx);
+    if (a.order > b.order)  return vInf(idx, a.order - b.order);
+    return vZero(idx, b.order - a.order);
+  }
+  if (a.type === 'zero' && b.type === 'inf') return vZero(a.index / b.index, a.order + b.order);
+  if (a.type === 'inf' && b.type === 'zero') return vInf(a.index / b.index, a.order + b.order);
   return vReal(NaN);
 }
 
